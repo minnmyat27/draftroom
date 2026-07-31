@@ -63,10 +63,11 @@ export async function signIn(email, password) {
 
 export async function signUp(email, password) {
   const client = await getClient();
+  const emailRedirectTo = new URL("app.html", window.location.href).href;
   const { data, error } = await client.auth.signUp({
     email,
     password,
-    options: { emailRedirectTo: `${window.location.origin}/app.html` },
+    options: { emailRedirectTo },
   });
   if (error) throw error;
   return data;

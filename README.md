@@ -79,7 +79,15 @@ In **Authentication → URL Configuration**, add:
 
 `http://localhost:4173/**`
 
-Use the final HTTPS domain as the production Site URL after deployment.
+For the current GitHub Pages deployment, also add:
+
+`https://minnmyat27.github.io/draftroom/**`
+
+Set the production Site URL to:
+
+`https://minnmyat27.github.io/draftroom/`
+
+Replace that Site URL with the custom HTTPS domain after connecting one.
 
 Current editing uses a last-write-wins note model. It supports live updates and
 shared editing, but simultaneous typing in the exact same note can overwrite the
