@@ -1,0 +1,9 @@
+# Local Windows launcher tied to this computer's Opera GX Dev profile.
+run-dev.cmd
+
+# Editor and operating-system files.
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+

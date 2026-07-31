@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="An offline-first personal notebook designed for future cloud sync."
+    />
+    <meta name="theme-color" content="#f1efe8" />
+    <title>Workspace — Draftroom</title>
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="stylesheet" href="styles.css" />
+    <script type="module" src="app.js"></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand-row">
+          <a class="brand" href="index.html" aria-label="Draftroom home">
+            <span class="brand-mark">D</span>
+            <span>Draftroom</span>
+          </a>
+          <button class="icon-button mobile-only" id="close-sidebar" aria-label="Close navigation">
+            ×
+          </button>
+        </div>
+
+        <button class="new-note-button" id="new-note-button">
+          <span aria-hidden="true">＋</span>
+          New note
+        </button>
+
+        <nav class="navigation" aria-label="Notebook views">
+          <button class="nav-item is-active" data-view="notes">
+            <span>Notes</span>
+            <span class="nav-count" id="notes-count">0</span>
+          </button>
+          <button class="nav-item" data-view="favorites">
+            <span>Favorites</span>
+            <span class="nav-count" id="favorites-count">0</span>
+          </button>
+          <button class="nav-item" data-view="archive">
+            <span>Archive</span>
+            <span class="nav-count" id="archive-count">0</span>
+          </button>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="sync-card">
+            <div class="sync-status">
+              <span class="status-dot" id="cloud-dot"></span>
+              <span id="cloud-status">Saved on this device</span>
+            </div>
+            <p id="cloud-detail">Sign in to sync between devices.</p>
+            <button class="sync-button" id="account-button">Sign in to sync</button>
+          </div>
+          <button class="quiet-button" id="export-button">Export all notes</button>
+        </div>
+      </aside>
+
+      <div class="sidebar-scrim" id="sidebar-scrim"></div>
+
+      <section class="notes-panel">
+        <header class="panel-header">
+          <button class="icon-button mobile-only" id="open-sidebar" aria-label="Open navigation">
+            ☰
+          </button>
+          <div>
+            <p class="section-kicker">Workspace</p>
+            <h1 id="view-title">All notes</h1>
+          </div>
+          <button class="mobile-new-button mobile-only" id="mobile-new-note">＋</button>
+        </header>
+
+        <div class="search-wrap">
+          <span aria-hidden="true">⌕</span>
+          <input
+            id="search-input"
+            type="search"
+            placeholder="Search titles, notes, or tags"
+            autocomplete="off"
+          />
+          <kbd>Ctrl K</kbd>
+        </div>
+
+        <div class="notes-summary">
+          <p id="results-label">Your recent thinking</p>
+          <select id="sort-select" aria-label="Sort notes">
+            <option value="updated-desc">Recently edited</option>
+            <option value="created-desc">Recently created</option>
+            <option value="title-asc">Title A–Z</option>
+          </select>
+        </div>
+
+        <div class="note-list" id="note-list" aria-label="Notes"></div>
+
+        <div class="empty-list" id="empty-list" hidden>
+          <span class="empty-glyph">✦</span>
+          <h2>No notes here yet</h2>
+          <p>Start with a rough thought. You can make it elegant later.</p>
+          <button class="secondary-button" id="empty-new-note">Create a note</button>
+        </div>
+      </section>
+
+      <main class="editor-panel" id="editor-panel">
+        <div class="editor-empty" id="editor-empty">
+          <div class="paper-stack" aria-hidden="true">
+            <span></span>
+            <span></span>
+            <span>✎</span>
+          </div>
+          <h2>Choose a note to begin</h2>
+          <p>Or create a new one and put an unfinished thought somewhere safe.</p>
+          <button class="secondary-button" id="editor-new-note">Create a note</button>
+        </div>
+
+        <article class="editor" id="editor" hidden>
+          <header class="editor-toolbar">
+            <div class="save-state">
+              <span class="status-dot"></span>
+              <span id="save-state">Saved</span>
+            </div>
+            <div class="editor-actions">
+              <button class="share-button" id="share-button">Share</button>
+              <button class="icon-button" id="favorite-button" aria-label="Favorite note">☆</button>
+              <button class="icon-button" id="archive-button" aria-label="Archive note">⌑</button>
+              <button class="icon-button danger-hover" id="delete-button" aria-label="Delete note">⌫</button>
+            </div>
+          </header>
+
+          <div class="editor-scroll">
+            <div class="access-banner" id="access-banner" hidden></div>
+            <input
+              class="title-input"
+              id="title-input"
+              type="text"
+              maxlength="120"
+              placeholder="Untitled note"
+              aria-label="Note title"
+            />
+
+            <div class="note-meta">
+              <span id="updated-label">Just now</span>
+              <span aria-hidden="true">•</span>
+              <span id="word-count">0 words</span>
+            </div>
+
+            <div class="tags-row">
+              <div class="tag-list" id="tag-list"></div>
+              <form id="tag-form">
+                <input
+                  id="tag-input"
+                  type="text"
+                  maxlength="24"
+                  placeholder="+ Add tag"
+                  aria-label="Add tag"
+                />
+              </form>
+            </div>
+
+            <textarea
+              id="content-input"
+              placeholder="Start writing…"
+              aria-label="Note content"
+            ></textarea>
+          </div>
+        </article>
+      </main>
+    </div>
+
+    <dialog id="delete-dialog">
+      <form method="dialog" class="dialog-card">
+        <p class="section-kicker">Permanent action</p>
+        <h2>Delete this note?</h2>
+        <p>This removes it from this device. Export first if you may need it later.</p>
+        <div class="dialog-actions">
+          <button value="cancel" class="quiet-button">Keep note</button>
+          <button value="confirm" class="danger-button">Delete permanently</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog id="auth-dialog">
+      <form class="dialog-card auth-card" id="auth-form">
+        <button type="button" class="dialog-close" id="auth-close" aria-label="Close">×</button>
+        <p class="section-kicker">Draftroom Cloud</p>
+        <h2 id="auth-title">Sign in</h2>
+        <p id="auth-description">Sync your private notes across your devices.</p>
+
+        <label class="field-label" for="auth-email">Email</label>
+        <input id="auth-email" type="email" autocomplete="email" required />
+
+        <label class="field-label" for="auth-password">Password</label>
+        <input
+          id="auth-password"
+          type="password"
+          minlength="8"
+          autocomplete="current-password"
+          required
+        />
+
+        <p class="auth-message" id="auth-message" aria-live="polite"></p>
+        <button class="secondary-button auth-submit" id="auth-submit" type="submit">Sign in</button>
+        <button class="auth-switch" id="auth-switch" type="button">
+          New here? Create an account
+        </button>
+      </form>
+    </dialog>
+
+    <dialog id="share-dialog">
+      <form class="dialog-card share-card" id="share-form">
+        <button type="button" class="dialog-close" id="share-close" aria-label="Close">×</button>
+        <p class="section-kicker">Invite someone</p>
+        <h2>Share this note</h2>
+        <p>Create a private, single-use link that expires after seven days.</p>
+
+        <fieldset class="permission-picker">
+          <legend>Permission</legend>
+          <label>
+            <input type="radio" name="share-role" value="editor" checked />
+            <span><strong>Can edit</strong><small>Read and modify this note</small></span>
+          </label>
+          <label>
+            <input type="radio" name="share-role" value="viewer" />
+            <span><strong>Can view</strong><small>Read without making changes</small></span>
+          </label>
+        </fieldset>
+
+        <button class="secondary-button share-submit" id="share-submit" type="submit">
+          Create invitation link
+        </button>
+
+        <div class="share-result" id="share-result" hidden>
+          <label class="field-label" for="share-url">Invitation link</label>
+          <div>
+            <input id="share-url" readonly />
+            <button type="button" id="copy-share-link">Copy</button>
+          </div>
+          <small>Anyone with this link can claim the selected access after signing in.</small>
+        </div>
+        <p class="auth-message" id="share-message" aria-live="polite"></p>
+      </form>
+    </dialog>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>

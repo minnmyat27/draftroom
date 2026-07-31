@@ -1,0 +1,9 @@
+{
+  "name": "Draftroom Notes",
+  "short_name": "Draftroom",
+  "description": "An offline-first personal notebook.",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#e9e6dc",
+  "theme_color": "#20231d"
+}
